@@ -1,18 +1,37 @@
 import { useState } from "react";
 import { Copy, RefreshCw } from "lucide-react";
+import { addDoc, collection } from "firebase/firestore";
 
 function App() {
   const [name, setName] = useState("");
   const [referralCode, setReferralCode] = useState("");
 
-  const generateReferralCode = () => {
+  // Save it DB in validInviteCodes {AMOG71BY: amogh}
+  // And remove it once validated
+  // Add it to validatedInviteCodes list as {amogh: true}
+  // Later on wallet connect we would just update that once {amogh: 0x121...511}
+  const generateReferralCode = async () => {
     if (!name) return;
 
-    // Generate a random string of 8 characters
     const randomString = Math.random().toString(36).substring(2, 6).toUpperCase();
-    // Combine first two letters of name with random string
-    const code = `${name.substring(0, 4).toUpperCase()}${randomString}`;
+    const code = `${name.substring(0, 4).toUpperCase()}${randomString}`; // To Combine first 4 letters of name with random string
+
     setReferralCode(code);
+
+    try {
+      // Save the code to validInviteCodes collection {AMOG71BY: amogh}
+
+      await addDoc(collection(db, "validInviteCodes"), {
+        name,
+        code,
+      });
+
+      // Return the generated code
+      return code;
+    } catch (error) {
+      console.error("Error saving referral code: ", error);
+      return null;
+    }
   };
 
   const copyToClipboard = () => {
@@ -76,5 +95,6 @@ function App() {
     </div>
   );
 }
+import { db } from "./firebase";
 
 export default App;
