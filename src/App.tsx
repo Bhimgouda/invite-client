@@ -25,7 +25,7 @@ function App() {
       style={{ backgroundImage: "linear-gradient(180deg, #01152a 1.93%, #03050d 28.18%)" }}
     >
       <div
-        className="w-full max-w-md  rounded-lg  p-8 min-h-[300px]"
+        className="w-full max-w-md  rounded-lg  p-8"
         style={{ backgroundImage: "linear-gradient(180deg, #01152a 1.93%, #03050d 28.18%)" }}
       >
         <div className="space-y-6">
