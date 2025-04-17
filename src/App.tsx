@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Copy, RefreshCw } from "lucide-react";
 import { addDoc, collection } from "firebase/firestore";
+import { db } from "./firebase.tsx";
 
 function App() {
   const [name, setName] = useState("");
   const [referralCode, setReferralCode] = useState("");
 
-  // Save it DB in validInviteCodes {AMOG71BY: amogh}
+  // Save it DB in inviteCode {AMOG71BY: amogh}
   // And remove it once validated
   // Add it to validatedInviteCodes list as {amogh: true}
   // Later on wallet connect we would just update that once {amogh: 0x121...511}
-  const generateReferralCode = async () => {
+  const generateReferralCode = async (e: any) => {
+    e.preventDefault();
+
     if (!name) return;
 
     const randomString = Math.random().toString(36).substring(2, 4).toUpperCase();
@@ -19,11 +22,11 @@ function App() {
     setReferralCode(code);
 
     try {
-      // Save the code to validInviteCodes collection {AMOG71BY: amogh}
-
-      await addDoc(collection(db, "validInviteCodes"), {
+      // Save the code to inviteCodes collection {AMOG71BY: amogh}
+      await addDoc(collection(db, "inviteCodes"), {
         name,
         code,
+        validated: false,
       });
 
       // Return the generated code
@@ -48,27 +51,29 @@ function App() {
         style={{ backgroundImage: "linear-gradient(180deg, #01152a 1.93%, #03050d 28.18%)" }}
       >
         <div className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
-              Enter Invitee's Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 bg-[#01152a] rounded-md focus:outline-none focus:ring-2 focus:ring-[rgb(8,79,170)] text-white placeholder-gray-400"
-              placeholder="John Doe"
-            />
-          </div>
+          <form className="space-y-6">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
+                Enter Invitee's Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-2 bg-[#01152a] rounded-md focus:outline-none focus:ring-2 focus:ring-[rgb(8,79,170)] text-white placeholder-gray-400"
+                placeholder="John Doe"
+              />
+            </div>
 
-          <button
-            onClick={generateReferralCode}
-            className="w-full bg-[rgb(8,79,170)] text-white py-2 px-4 rounded-md hover:bg-[rgb(8,79,170)]/90 transition-colors flex items-center justify-center gap-2"
-          >
-            <RefreshCw size={20} />
-            Generate Invite Code
-          </button>
+            <button
+              onClick={generateReferralCode}
+              className="w-full bg-[rgb(8,79,170)] text-white py-2 px-4 rounded-md hover:bg-[rgb(8,79,170)]/90 transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw size={20} />
+              Generate Invite Code
+            </button>
+          </form>
 
           {referralCode && (
             <div className="mt-6">
@@ -95,6 +100,5 @@ function App() {
     </div>
   );
 }
-import { db } from "./firebase";
 
 export default App;
