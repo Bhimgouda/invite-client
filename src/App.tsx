@@ -13,7 +13,7 @@ function App() {
   const generateReferralCode = async () => {
     if (!name) return;
 
-    const randomString = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const randomString = Math.random().toString(36).substring(2, 4).toUpperCase();
     const code = `${name.substring(0, 4).toUpperCase()}${randomString}`; // To Combine first 4 letters of name with random string
 
     setReferralCode(code);
