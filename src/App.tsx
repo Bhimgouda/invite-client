@@ -1,11 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Copy, RefreshCw } from "lucide-react";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "./firebase.tsx";
+
+interface InviteCode {
+  username: string;
+  validated: boolean;
+  // Add any other fields your document has
+}
 
 function App() {
   const [name, setName] = useState("");
+  const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
   const [referralCode, setReferralCode] = useState("");
+
+  useEffect(() => {
+    const getInviteCodes = async () => {
+      const inviteCodesRef = collection(db, "inviteCodes");
+
+      // Get all documents in the collection
+      const querySnapshot = await getDocs(inviteCodesRef);
+
+      // Create an array to store the results
+
+      // Initialize the array properly
+      const _inviteCodes: InviteCode[] = [];
+
+      // Loop through the documents and add them to the array
+      querySnapshot.forEach((doc) => {
+        _inviteCodes.push({
+          ...(doc.data() as InviteCode), // Cast the data to your interface type
+        });
+      });
+
+      setInviteCodes(_inviteCodes);
+    };
+
+    getInviteCodes();
+  }, []);
 
   // Save it DB in inviteCode {AMOG71BY: amogh}
   // And remove it once validated
@@ -22,10 +54,8 @@ function App() {
     setReferralCode(code);
 
     try {
-      // Save the code to inviteCodes collection {AMOG71BY: amogh}
-      await addDoc(collection(db, "inviteCodes"), {
-        name,
-        code,
+      await setDoc(doc(db, "inviteCodes", code), {
+        username: name,
         validated: false,
       });
 
@@ -50,8 +80,8 @@ function App() {
         className="w-full max-w-md  rounded-lg  p-8"
         style={{ backgroundImage: "linear-gradient(180deg, #01152a 1.93%, #03050d 28.18%)" }}
       >
-        <div className="space-y-6">
-          <form className="space-y-6">
+        <div className="space-y-6 h-svh flex justify-center flex-col">
+          <form className="space-y-6 ">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
                 Enter Invitee's Name
@@ -95,6 +125,26 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+
+        <h2 className="text-xl font-semibold text-white mb-4">Past Referrals</h2>
+        <div className="bg-[#01152a] rounded-lg overflow-hidden">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[rgb(8,79,170)]/30">
+                <th className="px-4 py-2 text-left text-white">Name</th>
+                <th className="px-4 py-2 text-left text-white">Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inviteCodes.map((entry: InviteCode, index) => (
+                <tr key={index} className="border-b border-[rgb(8,79,170)]/30 last:border-0">
+                  <td className="px-4 py-2 text-white">{entry.username}</td>
+                  <td className="px-4 py-2 text-white">{entry.validated ? "✅" : "No"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
