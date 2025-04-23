@@ -126,26 +126,6 @@ function App() {
             </div>
           )}
         </div>
-
-        <h2 className="text-xl font-semibold text-white mb-4">Past Referrals</h2>
-        <div className="bg-[#01152a] rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[rgb(8,79,170)]/30">
-                <th className="px-4 py-2 text-left text-white">Name</th>
-                <th className="px-4 py-2 text-left text-white">Joined</th>
-              </tr>
-            </thead>
-            <tbody>
-              {inviteCodes.map((entry: InviteCode, index) => (
-                <tr key={index} className="border-b border-[rgb(8,79,170)]/30 last:border-0">
-                  <td className="px-4 py-2 text-white">{entry.username}</td>
-                  <td className="px-4 py-2 text-white">{entry.validated ? "✅" : "No"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
